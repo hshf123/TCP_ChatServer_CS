@@ -6,7 +6,6 @@ namespace ServerCore
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
         }
     }
 }
