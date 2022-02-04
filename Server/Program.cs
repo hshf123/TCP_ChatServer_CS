@@ -3,29 +3,29 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace Server
 {
     class Program
     {
         static Listener _listener = new Listener();
+        static Session _session = new Session();
 
         static void OnAcceptHandler(Socket clientSocket)
         {
             try
             {
+                _session.Start(clientSocket);
+
                 while (true)
                 {
-                    // Recieve
-                    byte[] recvBuffer = new byte[1024];
-                    int recvLen = clientSocket.Receive(recvBuffer);
-                    string recvData = Encoding.UTF8.GetString(recvBuffer, 0, recvLen);
-                    Console.WriteLine(recvData);
-
                     // Send
                     byte[] sendBuffer = new byte[1024];
-                    sendBuffer = Encoding.UTF8.GetBytes($"\"{recvData}\"이라는 문장을 받았습니다!");
-                    clientSocket.Send(sendBuffer);
+                    sendBuffer = Encoding.UTF8.GetBytes($"클라이언트로 전송");
+                    _session.Send(sendBuffer);
+
+                    Thread.Sleep(1000);
                 }
             }
             catch (Exception e)
@@ -50,7 +50,7 @@ namespace Server
             _listener.Init(endPoint, OnAcceptHandler);
             Console.WriteLine("연결 대기중...");
 
-            while(true)
+            while (true)
             {
 
             }
