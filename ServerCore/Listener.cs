@@ -13,14 +13,14 @@ namespace ServerCore
         // 3. 안되면 대기 했다가 완료.
 
         Socket _socket;
-        Action<Socket> _action;
+        Func<Session> _sessionFactory;
 
-        public void Init(IPEndPoint endPoint, Action<Socket> action)
+        public void Init(IPEndPoint endPoint, Func<Session> sessionFactory)
         {
             _socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             _socket.Bind(endPoint);
             _socket.Listen(10);
-            _action = action;
+            _sessionFactory += sessionFactory;
             SocketAsyncEventArgs args = new SocketAsyncEventArgs();
             args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
             RegisterAccept(args);
@@ -41,7 +41,9 @@ namespace ServerCore
         {
             if (args.SocketError == SocketError.Success)
             {
-                _action.Invoke(args.AcceptSocket);
+                Session session = _sessionFactory.Invoke();
+                session.Start(args.AcceptSocket);
+                session.OnConnected(args.AcceptSocket.RemoteEndPoint);
             }
             else
                 Console.WriteLine(args.SocketError.ToString());

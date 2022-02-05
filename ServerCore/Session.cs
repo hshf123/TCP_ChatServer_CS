@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
 namespace ServerCore
 {
-    public class Session
+    public abstract class Session
     {
         Socket _socket;
         int _disconnected = 0;
@@ -16,6 +17,11 @@ namespace ServerCore
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
         SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
+
+        public abstract void OnConnected(EndPoint endPoint);
+        public abstract void OnRecv(ArraySegment<byte> buffer);
+        public abstract void OnSend(int numOfBytes);
+        public abstract void OnDisConnected(EndPoint endPoint);
 
         public void Start(Socket socket)
         {
@@ -33,6 +39,7 @@ namespace ServerCore
         {
             if (Interlocked.CompareExchange(ref _disconnected, 1, 0) == 1)
                 return;
+            OnDisConnected(_socket.RemoteEndPoint);
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
         }
@@ -52,9 +59,7 @@ namespace ServerCore
             {
                 try
                 {
-                    string recvData = Encoding.UTF8.GetString(args.Buffer, args.Offset, args.BytesTransferred);
-                    Console.WriteLine(recvData);
-
+                    OnRecv(new ArraySegment<byte>(args.Buffer, args.Offset, args.BytesTransferred));
                     RegisterRecv();
                 }
                 catch (Exception e)
@@ -105,6 +110,7 @@ namespace ServerCore
             {
                 if (args.SocketError == SocketError.Success && args.BytesTransferred > 0)
                 {
+                    OnSend(args.BytesTransferred);
                     _sendArgs.BufferList = null;
                     _pendingList.Clear();
 

@@ -7,23 +7,19 @@ using System.Threading;
 
 namespace Server
 {
-    class Program
+    class ChatSession : Session
     {
-        static Listener _listener = new Listener();
-        static Session _session = new Session();
-
-        static void OnAcceptHandler(Socket clientSocket)
+        public override void OnConnected(EndPoint endPoint)
         {
+            Console.WriteLine($"OnConnected : {endPoint.ToString()}");
             try
             {
-                _session.Start(clientSocket);
-
                 while (true)
                 {
                     // Send
                     byte[] sendBuffer = new byte[1024];
-                    sendBuffer = Encoding.UTF8.GetBytes($"클라이언트로 전송");
-                    _session.Send(sendBuffer);
+                    sendBuffer = Encoding.UTF8.GetBytes("클라이언트로 전송!");
+                    Send(sendBuffer);
 
                     Thread.Sleep(1000);
                 }
@@ -33,6 +29,27 @@ namespace Server
                 Console.WriteLine(e.ToString());
             }
         }
+
+        public override void OnDisConnected(EndPoint endPoint)
+        {
+            Console.WriteLine($"OnDisConnected : {endPoint.ToString()}");
+        }
+
+        public override void OnRecv(ArraySegment<byte> buffer)
+        {
+            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
+            Console.WriteLine(recvData);
+        }
+
+        public override void OnSend(int numOfBytes)
+        {
+            Console.WriteLine($"Send : {numOfBytes}");
+        }
+    }
+
+    class Program
+    {
+        static Listener _listener = new Listener();
 
         static void Main(string[] args)
         {
@@ -47,7 +64,7 @@ namespace Server
             IPAddress ipAddr = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 194);
 
-            _listener.Init(endPoint, OnAcceptHandler);
+            _listener.Init(endPoint, ()=> { return new ChatSession(); });
             Console.WriteLine("연결 대기중...");
 
             while (true)
