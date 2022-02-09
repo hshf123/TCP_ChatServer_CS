@@ -7,7 +7,13 @@ using System.Threading;
 
 namespace Client
 {
-    class ChatSession : Session
+    class ChatPacket
+    {
+        public ushort size;
+        public ushort packetId;
+    }
+
+    public class ChatSession : PacketSession
     {
         public override void OnConnected(EndPoint endPoint)
         {
@@ -17,14 +23,20 @@ namespace Client
                 while (true)
                 {
                     // Send
-                    byte[] sendBuffer = new byte[1024];
-                    sendBuffer = Encoding.UTF8.GetBytes("서버로 전송!");
-                    Send(sendBuffer);
+                    ChatPacket packet = new ChatPacket() { size = 4, packetId = 0 };
+
+                    ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
+                    byte[] buffer = BitConverter.GetBytes(packet.size);
+                    byte[] buffer2 = BitConverter.GetBytes(packet.packetId);
+                    Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
+                    Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
+                    ArraySegment<byte> sendBuff = SendBufferHelper.Close(packet.size);
+                    Send(sendBuff);
 
                     Thread.Sleep(1000);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
@@ -35,12 +47,13 @@ namespace Client
             Console.WriteLine($"OnDisConnected : {endPoint.ToString()}");
         }
 
-        public override int OnRecv(ArraySegment<byte> buffer)
+        public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            int recvLen = buffer.Count;
-            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
-            Console.WriteLine(recvData);
-            return recvLen;
+            ushort count = 0;
+            ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+            count += sizeof(ushort);
+            ushort packetId = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
+            Console.WriteLine($"Size : {size} / PacketID : {packetId}");
         }
 
         public override void OnSend(int numOfBytes)
@@ -48,6 +61,7 @@ namespace Client
             Console.WriteLine($"Send : {numOfBytes}");
         }
     }
+
 
     class Program
     {
@@ -65,7 +79,7 @@ namespace Client
             Connector connector = new Connector();
             connector.Connect(endPoint, () => { return new ChatSession(); });
 
-            while(true)
+            while (true)
             {
 
             }

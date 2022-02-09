@@ -7,22 +7,31 @@ using System.Threading;
 
 namespace Server
 {
-    class ChatSession : Session
+    class ChatPacket
+    {
+        public ushort size;
+        public ushort packetId;
+    }
+
+    public class ChatSession : PacketSession
     {
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnConnected : {endPoint.ToString()}");
             try
             {
-                while (true)
-                {
-                    // Send
-                    byte[] sendBuffer = new byte[1024];
-                    sendBuffer = Encoding.UTF8.GetBytes("클라이언트로 전송!");
-                    Send(sendBuffer);
+                //// Send
+                //ChatPacket packet = new ChatPacket() { size = 4, packetId = 0 };
 
-                    Thread.Sleep(1000);
-                }
+                //ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
+                //byte[] buffer = BitConverter.GetBytes(packet.size);
+                //byte[] buffer2 = BitConverter.GetBytes(packet.packetId);
+                //Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
+                //Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
+                //ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length + buffer2.Length);
+                //Send(sendBuff);
+
+                Thread.Sleep(1000);
             }
             catch (Exception e)
             {
@@ -35,12 +44,13 @@ namespace Server
             Console.WriteLine($"OnDisConnected : {endPoint.ToString()}");
         }
 
-        public override int OnRecv(ArraySegment<byte> buffer)
+        public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            int recvLen = buffer.Count;
-            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
-            Console.WriteLine(recvData);
-            return recvLen;
+            ushort count = 0;
+            ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+            count += sizeof(ushort);
+            ushort packetId = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
+            Console.WriteLine($"Size : {size} / PacketID : {packetId}");
         }
 
         public override void OnSend(int numOfBytes)
@@ -66,7 +76,7 @@ namespace Server
             IPAddress ipAddr = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 194);
 
-            _listener.Init(endPoint, ()=> { return new ChatSession(); });
+            _listener.Init(endPoint, () => { return new ChatSession(); });
             Console.WriteLine("연결 대기중...");
 
             while (true)
