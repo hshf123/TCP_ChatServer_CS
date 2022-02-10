@@ -24,6 +24,7 @@ namespace Client
     class UserInfoReq : ChatPacket
     {
         public long userId;
+        public string userName;
 
         public UserInfoReq()
         {
@@ -32,27 +33,41 @@ namespace Client
 
         public override void Read(ArraySegment<byte> segment)
         {
+            ReadOnlySpan<byte> read = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
             ushort count = 0;
 
             count += sizeof(ushort);
             count += sizeof(ushort);
-            this.userId = BitConverter.ToInt64(new ReadOnlySpan<byte>(segment.Array, segment.Offset + count, segment.Count - count));
+            this.userId = BitConverter.ToInt64(read.Slice(count, read.Length - count));
             count += sizeof(long);
+            ushort userNameLen = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
+            count += sizeof(ushort);
+            this.userName = Encoding.Unicode.GetString(read.Slice(count, userNameLen));
         }
 
         public override ArraySegment<byte> Write()
         {
             ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+            Span<byte> span = new Span<byte>(segment.Array, segment.Offset, segment.Count);
 
             ushort count = 0;
             bool success = true;
 
             count += sizeof(ushort);
-            success &= BitConverter.TryWriteBytes(new Span<byte>(segment.Array, segment.Offset + count, segment.Count - count), this.packetId);
+            success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), this.packetId);
             count += sizeof(ushort);
-            success &= BitConverter.TryWriteBytes(new Span<byte>(segment.Array, segment.Offset + count, segment.Count - count), this.userId);
+            success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), this.userId);
             count += sizeof(long);
-            success &= BitConverter.TryWriteBytes(new Span<byte>(segment.Array, segment.Offset, segment.Count), count);
+
+            ushort userNameLen = (ushort)Encoding.Unicode.GetByteCount(this.userName);
+            success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), userNameLen);
+            count += sizeof(ushort);
+            Array.Copy(Encoding.Unicode.GetBytes(this.userName), 0, segment.Array, count, userNameLen);
+            count += userNameLen;
+
+            //ushort userNameLen = (ushort)Encoding.Unicode.GetBytes(this.userName, 0, this.userName.Length, segment.Array, segment.Offset + count + sizeof(ushort));
+
+            success &= BitConverter.TryWriteBytes(span, count);
 
             if (success == false)
                 return null;
@@ -71,7 +86,7 @@ namespace Client
                 while (true)
                 {
                     // Send
-                    UserInfoReq packet = new UserInfoReq() { userId = 1798 };
+                    UserInfoReq packet = new UserInfoReq() { userId = 1798, userName = "LeafC" };
 
                     ArraySegment<byte> segment = packet.Write();
                     if (segment != null)
