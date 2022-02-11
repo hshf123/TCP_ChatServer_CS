@@ -6,7 +6,10 @@ namespace PacketGenerator
 {
     class Program
     {
-        static string genPackets = "";
+        static string genPackets;
+
+        static string packetNames;
+        static ushort packetId;
 
         static void Main(string[] args)
         {
@@ -26,8 +29,8 @@ namespace PacketGenerator
                         ParsePacket(xml);
                 }
             }
-
-            File.WriteAllText("GenPackets.cs", genPackets);
+            string fileText = string.Format(PacketFormat.fileFormat, packetNames, genPackets);
+            File.WriteAllText("GenPackets.cs", fileText);
         }
 
         public static void ParsePacket(XmlReader xml)
@@ -50,6 +53,7 @@ namespace PacketGenerator
 
             Tuple<string, string, string> tuple = ParseMembers(xml);
             genPackets += string.Format(PacketFormat.packetFormat, packetName, tuple.Item1, tuple.Item2, tuple.Item3);
+            packetNames += string.Format(PacketFormat.fileEnumFormat, packetName, ++packetId) + Environment.NewLine + "\t";
         }
 
         public static Tuple<string, string, string> ParseMembers(XmlReader xml)
@@ -83,8 +87,13 @@ namespace PacketGenerator
                 string memberType = xml.Name.ToLower();
                 switch (memberType)
                 {
-                    case "bool":
                     case "byte":
+                    case "sbyte":
+                        memberCode += string.Format(PacketFormat.memberFormat, memberType, memberName);
+                        readCode += string.Format(PacketFormat.readByteFormat, memberName, memberType);
+                        writeCode += string.Format(PacketFormat.writeByteFormat, memberName, memberType);
+                        break;
+                    case "bool":
                     case "short":
                     case "ushort":
                     case "int":
@@ -132,8 +141,8 @@ namespace PacketGenerator
                 FirstCharToUpper(listName),
                 FirstCharToLower(listName),
                 tuple.Item1,
-                tuple.Item2,
-                tuple.Item3);
+                tuple.Item3,
+                tuple.Item2);
             string readCode = string.Format(PacketFormat.readListFormat,
                 FirstCharToUpper(listName),
                 FirstCharToLower(listName));
