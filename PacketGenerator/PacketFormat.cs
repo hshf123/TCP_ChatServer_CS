@@ -20,7 +20,7 @@ class {0}
 
         count += sizeof(ushort);
         count += sizeof(ushort);
-{2}
+        {2}
     }}
 
     public override ArraySegment<byte> Write()
@@ -52,8 +52,7 @@ class {0}
 
         // {0} 변수명 {1} ToInt~ {2} 데이터형식
         public static string readFormat =
-@"          
-this.{0} = BitConverter.{1}(read.Slice(count, read.Length - count));
+@"this.{0} = BitConverter.{1}(read.Slice(count, read.Length - count));
 count += sizeof({2});";
 
         // {0} 변수명 {1} 데이터형식
@@ -63,8 +62,7 @@ count += sizeof({1});";
 
         // {0} 변수명 {}
         public static string readStringFormat =
-@"
-ushort {0}Len = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
+@"ushort {0}Len = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
 count += sizeof(ushort);
 this.{0} = Encoding.Unicode.GetString(read.Slice(count, {0}Len));
 count += {0}Len;";
@@ -76,5 +74,46 @@ success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), {0
 count += sizeof(ushort);
 Array.Copy(Encoding.Unicode.GetBytes(this.{0}), 0, segment.Array, count, {0}Len);
 count += {0}Len;";
+
+        // {0} 리스트이름 {1} 리스트이름(첫번째 소문자) {2} 멤버변수 {3} write {4} read
+        public static string memberListFormat =
+@"public struct {0}
+{{
+    {2}
+
+    public bool Write(Span<byte> span, ref ushort count)
+    {{
+        bool success = true;
+
+        {3}
+
+        return success;
+    }}
+
+    public void Read(ReadOnlySpan<byte> read, ref ushort count)
+    {{
+        {4}
+    }}
+}}
+
+public List<{0}> {1}s = new List<{0}>();";
+
+        // {0} 구조체 이름 {1} 리스트 이름
+        public static string readListFormat =
+@"{1}s.Clear();
+ushort {1}Len = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
+count += sizeof(ushort);
+for (int i = 0; i < {1}Len; i++)
+{{
+    {0} {1} = new {0}();
+    {1}.Read(read, ref count);
+    list.Add({1});
+}}";
+        // {0} 구조체 이름 {1} 리스트 이름
+        public static string writeListFormat =
+@"success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), (ushort){1}s.Count);
+count += sizeof(ushort);
+foreach ({0} {1} in {1}s)
+    {1}.Write(span, ref count);";
     }
 }
