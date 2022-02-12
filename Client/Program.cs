@@ -21,7 +21,7 @@ namespace Client
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 194);
 
             Connector connector = new Connector();
-            connector.Connect(endPoint, SessionManager.Instance.Generate, 10);
+            connector.Connect(endPoint, SessionManager.Instance.Generate, 500);
 
             while (true)
             {

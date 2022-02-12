@@ -31,6 +31,6 @@ class ClientSession : PacketSession
 
     public override void OnSend(int numOfBytes)
     {
-        Console.WriteLine($"SendByte : {numOfBytes}");
+        // Console.WriteLine($"SendByte : {numOfBytes}");
     }
 }

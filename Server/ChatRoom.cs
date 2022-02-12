@@ -7,25 +7,19 @@ namespace Server
 {
     class ChatRoom : IJobQueue
     {
-        object _lock = new object();
         List<ClientSession> _sessions = new List<ClientSession>();
         JobQueue _jobQueue = new JobQueue();
+        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
 
         public void Enter(ClientSession session)
         {
-            lock(_lock)
-            {
-                _sessions.Add(session);
-                session.Room = this;
-            }
+            _sessions.Add(session);
+            session.Room = this;
         }
 
         public void Leave(ClientSession session)
         {
-            lock(_lock)
-            {
-                _sessions.Remove(session);
-            }
+            _sessions.Remove(session);
         }
 
         public void BroadCast(ClientSession session, string chat)
@@ -35,11 +29,15 @@ namespace Server
             pkt.chat = chat;
             ArraySegment<byte> segment = pkt.Write();
 
-            lock(_lock)
-            {
-                foreach (ClientSession cs in _sessions)
-                    cs.Send(segment);
-            }
+            _pendingList.Add(segment);
+        }
+
+        public void Flush()
+        {
+            foreach (ClientSession cs in _sessions)
+                cs.Send(_pendingList);
+
+            _pendingList.Clear();
         }
 
         public void Push(Action job)

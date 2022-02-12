@@ -41,7 +41,7 @@ namespace ServerCore
         Socket _socket;
         int _disconnected = 0;
 
-        RecvBuffer _recvBuffer = new RecvBuffer(4096);
+        RecvBuffer _recvBuffer = new RecvBuffer(65535);
         object _lock = new object();
         Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
@@ -83,33 +83,67 @@ namespace ServerCore
             ArraySegment<byte> seg = _recvBuffer.WriteSegment;
             _recvArgs.SetBuffer(seg.Array, seg.Offset, seg.Count);
 
-            bool pending = _socket.ReceiveAsync(_recvArgs);
-            if (pending == false)
-                OnRecvCompleted(null, _recvArgs);
+            try
+            {
+                bool pending = _socket.ReceiveAsync(_recvArgs);
+                if (pending == false)
+                    OnRecvCompleted(null, _recvArgs);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"RegisterRecv Fail : {e}");
+            }
         }
 
         void OnRecvCompleted(object sender, SocketAsyncEventArgs args)
         {
-            if (_recvBuffer.OnWrite(args.BytesTransferred) == false)
+            if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
             {
-                Disconnect();
-                return;
-            }
+                try
+                {
+                    if (_recvBuffer.OnWrite(args.BytesTransferred) == false)
+                    {
+                        Disconnect();
+                        return;
+                    }
 
-            int processLen = OnRecv(_recvBuffer.ReadSegment);
-            if (processLen < 0 || _recvBuffer.DataSize < processLen)
+                    int processLen = OnRecv(_recvBuffer.ReadSegment);
+                    if (processLen < 0 || _recvBuffer.DataSize < processLen)
+                    {
+                        Disconnect();
+                        return;
+                    }
+
+                    if (_recvBuffer.OnRead(args.BytesTransferred) == false)
+                    {
+                        Disconnect();
+                        return;
+                    }
+
+                    RegisterRecv();
+                }
+                catch (Exception e)
+                {
+                    Disconnect();
+                }
+            }
+        }
+
+        public void Send(List<ArraySegment<byte>> sendBuffList)
+        {
+            if (sendBuffList.Count == 0)
+                return;
+
+            lock (_lock)
             {
-                Disconnect();
-                return;
-            }
+                foreach (ArraySegment<byte> sendBuff in sendBuffList)
+                {
+                    _sendQueue.Enqueue(sendBuff);
+                }
 
-            if (_recvBuffer.OnRead(args.BytesTransferred) == false)
-            {
-                Disconnect();
-                return;
+                if (_pendingList.Count == 0)
+                    RegisterSend();
             }
-
-            RegisterRecv();
         }
 
         public void Send(ArraySegment<byte> sendBuff)
