@@ -1,4 +1,5 @@
-﻿using ServerCore;
+﻿using Server;
+using ServerCore;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -10,6 +11,7 @@ namespace Server
     class Program
     {
         static Listener _listener = new Listener();
+        public static ChatRoom Room { get; set; } = new ChatRoom();
 
         static void Main(string[] args)
         {
@@ -24,7 +26,7 @@ namespace Server
             IPAddress ipAddr = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 194);
 
-            _listener.Init(endPoint, () => { return new ClientSession(); });
+            _listener.Init(endPoint, SessionManager.Instance.Generate);
             Console.WriteLine("연결 대기중...");
 
             while (true)

@@ -11,15 +11,21 @@ namespace PacketGenerator
         static string packetNames;
         static ushort packetId;
 
+        static string clientRegisterManager;
+        static string serverRegisterManager;
+
         static void Main(string[] args)
         {
+            string PDLPath = args[0];
+            //string PDLPath = "../PDL.xml";
+
             XmlReaderSettings xmlReaderSettings = new XmlReaderSettings()
             {
                 IgnoreComments = true,
                 IgnoreWhitespace = true
             };
 
-            using (XmlReader xml = XmlReader.Create("PDL.xml", xmlReaderSettings))
+            using (XmlReader xml = XmlReader.Create(PDLPath, xmlReaderSettings))
             {
                 xml.MoveToContent();
 
@@ -30,7 +36,11 @@ namespace PacketGenerator
                 }
             }
             string fileText = string.Format(PacketFormat.fileFormat, packetNames, genPackets);
+            string clientManagerText = string.Format(PacketFormat.clientPacketManagerFormat, clientRegisterManager);
+            string serverManagerText = string.Format(PacketFormat.serverPacketManagerFormat, serverRegisterManager);
             File.WriteAllText("GenPackets.cs", fileText);
+            File.WriteAllText("ClientPacketManager.cs", clientManagerText);
+            File.WriteAllText("ServerPacketManager.cs", serverManagerText);
         }
 
         public static void ParsePacket(XmlReader xml)
@@ -54,6 +64,10 @@ namespace PacketGenerator
             Tuple<string, string, string> tuple = ParseMembers(xml);
             genPackets += string.Format(PacketFormat.packetFormat, packetName, tuple.Item1, tuple.Item2, tuple.Item3);
             packetNames += string.Format(PacketFormat.fileEnumFormat, packetName, ++packetId) + Environment.NewLine + "\t";
+            if(packetName.StartsWith("C_") || packetName.StartsWith("c_"))
+                serverRegisterManager += string.Format(PacketFormat.registerManagerFormat, packetName) + Environment.NewLine + "\t";
+            else
+                clientRegisterManager += string.Format(PacketFormat.registerManagerFormat, packetName) + Environment.NewLine + "\t";
         }
 
         public static Tuple<string, string, string> ParseMembers(XmlReader xml)

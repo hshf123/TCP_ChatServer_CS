@@ -21,11 +21,20 @@ namespace Client
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 194);
 
             Connector connector = new Connector();
-            connector.Connect(endPoint, () => { return new ServerSession(); });
+            connector.Connect(endPoint, SessionManager.Instance.Generate, 10);
 
             while (true)
             {
+                try
+                {
+                    SessionManager.Instance.SendForEach();
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
 
+                Thread.Sleep(1000);
             }
         }
     }

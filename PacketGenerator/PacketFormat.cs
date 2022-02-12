@@ -6,6 +6,7 @@ namespace PacketGenerator
 {
     class PacketFormat
     {
+        #region GenPackets.cs
         // {0} 패킷목록 {1} genPackets
         public static string fileFormat =
 @"using ServerCore;
@@ -20,13 +21,11 @@ public enum PacketID
     {0}
 }}
 
-public abstract class ChatPacket
+interface IPacket
 {{
-    public ushort size;
-    public ushort packetId;
-
-    public abstract ArraySegment<byte> Write();
-    public abstract void Read(ArraySegment<byte> segment);
+	ushort Protocol {{ get; }}
+	ArraySegment<byte> Write();
+	void Read(ArraySegment<byte> segment);
 }}
 
 {1}
@@ -38,11 +37,13 @@ public abstract class ChatPacket
         // {0} 클래스이름 {1}멤버변수 {2} Read {3} Write
         public static string packetFormat =
  @"
-class {0} : ChatPacket
+class {0} : IPacket
 {{
     {1}
 
-    public override void Read(ArraySegment<byte> segment)
+    public ushort Protocol {{ get {{ return (ushort)PacketID.{0}; }} }}
+
+    public void Read(ArraySegment<byte> segment)
     {{
         ReadOnlySpan<byte> read = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
         ushort count = 0;
@@ -52,7 +53,7 @@ class {0} : ChatPacket
         {2}
     }}
 
-    public override ArraySegment<byte> Write()
+    public ArraySegment<byte> Write()
     {{
         ArraySegment<byte> segment = SendBufferHelper.Open(4096);
         Span<byte> span = new Span<byte>(segment.Array, segment.Offset, segment.Count);
@@ -154,5 +155,129 @@ count += sizeof({1});";
         public static string writeByteFormat =
 @"segment.Array[segment.Offset + count] = (byte)this.{0};
 count += sizeof({1});";
+        #endregion
+
+        #region PacketManager
+
+        // {0} Register
+        public static string clientPacketManagerFormat =
+@"using Client;
+using ServerCore;
+using System;
+using System.Collections.Generic;
+
+class ClientPacketManager
+{{
+    ClientPacketManager()
+    {{
+        Register();
+    }}
+
+    static ClientPacketManager _instance;
+    public static ClientPacketManager Instance
+    {{
+        get
+        {{
+            if (_instance == null)
+                _instance = new ClientPacketManager();
+            return _instance;
+        }}
+    }}
+
+    Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>>();
+    Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>();
+        
+    public void Register()
+    {{
+        {0}
+    }}
+
+    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
+    {{
+        ushort count = 0;
+        ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+        count += sizeof(ushort);
+        ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
+        count += sizeof(ushort);
+
+        Action<PacketSession, ArraySegment<byte>> action = null;
+        if (_onRecv.TryGetValue(id, out action))
+            action.Invoke(session, buffer);
+    }}
+
+    void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T : IPacket, new()
+    {{
+        T pkt = new T();
+        pkt.Read(buffer);
+
+        Action<PacketSession, IPacket> action = null;
+        if (_handler.TryGetValue(pkt.Protocol, out action))
+            action.Invoke(session, pkt);
+    }}
+}}
+";
+        public static string serverPacketManagerFormat =
+@"using Server;
+using ServerCore;
+using System;
+using System.Collections.Generic;
+
+class ServerPacketManager
+{{
+    ServerPacketManager()
+    {{
+        Register();
+    }}
+
+    static ServerPacketManager _instance;
+    public static ServerPacketManager Instance
+    {{
+        get
+        {{
+            if (_instance == null)
+                _instance = new ServerPacketManager();
+            return _instance;
+        }}
+    }}
+
+    Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>>();
+    Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>();
+        
+    public void Register()
+    {{
+        {0}
+    }}
+
+    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
+    {{
+        ushort count = 0;
+        ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+        count += sizeof(ushort);
+        ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
+        count += sizeof(ushort);
+
+        Action<PacketSession, ArraySegment<byte>> action = null;
+        if (_onRecv.TryGetValue(id, out action))
+            action.Invoke(session, buffer);
+    }}
+
+    void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T : IPacket, new()
+    {{
+        T pkt = new T();
+        pkt.Read(buffer);
+
+        Action<PacketSession, IPacket> action = null;
+        if (_handler.TryGetValue(pkt.Protocol, out action))
+            action.Invoke(session, pkt);
+    }}
+}}
+";
+
+        // {0} 패킷이름
+        public static string registerManagerFormat =
+@"_onRecv.Add((ushort)PacketID.{0}, MakePacket<{0}>);
+        _handler.Add((ushort)PacketID.{0}, PacketHandler.{0}Handler);";
+
+        #endregion
     }
 }

@@ -10,16 +10,19 @@ namespace ServerCore
     {
         Func<Session> _sessionFactory;
 
-        public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory)
+        public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory, int backlog)
         {
-            Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            _sessionFactory = sessionFactory;
-            SocketAsyncEventArgs args = new SocketAsyncEventArgs();
-            args.Completed += OnConnectCompleted;
-            args.RemoteEndPoint = endPoint;
-            args.UserToken = socket;
+            for(int i=0; i<backlog; i++)
+            {
+                Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                _sessionFactory = sessionFactory;
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.Completed += OnConnectCompleted;
+                args.RemoteEndPoint = endPoint;
+                args.UserToken = socket;
 
-            RegisterConnect(args);
+                RegisterConnect(args);
+            }
         }
 
         void RegisterConnect(SocketAsyncEventArgs args)
