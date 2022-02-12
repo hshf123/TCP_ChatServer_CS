@@ -15,7 +15,8 @@ namespace Server
             if (cs.Room == null)
                 return;
 
-            cs.Room.BroadCast(cs, pkt.chat);
+            ChatRoom room = cs.Room;
+            room.Push(() => { room.BroadCast(cs, pkt.chat); });
         }
     }
 }

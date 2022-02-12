@@ -5,10 +5,11 @@ using System.Text;
 
 namespace Server
 {
-    class ChatRoom
+    class ChatRoom : IJobQueue
     {
         object _lock = new object();
         List<ClientSession> _sessions = new List<ClientSession>();
+        JobQueue _jobQueue = new JobQueue();
 
         public void Enter(ClientSession session)
         {
@@ -39,6 +40,11 @@ namespace Server
                 foreach (ClientSession cs in _sessions)
                     cs.Send(segment);
             }
+        }
+
+        public void Push(Action job)
+        {
+            _jobQueue.Push(job);
         }
     }
 }

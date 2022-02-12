@@ -10,7 +10,7 @@ class ClientSession : PacketSession
 
     public override void OnConnected(EndPoint endPoint)
     {
-        Program.Room.Enter(this);
+        Program.Room.Push(() => { Program.Room.Enter(this); });
     }
 
     public override void OnDisConnected(EndPoint endPoint)
@@ -18,7 +18,8 @@ class ClientSession : PacketSession
         SessionManager.Instance.Remove(this);
         if (Room != null)
         {
-            Room.Leave(this);
+            ChatRoom room = Room;
+            room.Push(() => { room.Leave(this); });
             Room = null;
         }
     }
