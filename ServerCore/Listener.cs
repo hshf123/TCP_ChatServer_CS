@@ -15,11 +15,11 @@ namespace ServerCore
         Socket _socket;
         Func<Session> _sessionFactory;
 
-        public void Init(IPEndPoint endPoint, Func<Session> sessionFactory)
+        public void Init(IPEndPoint endPoint, Func<Session> sessionFactory, int backlog = 100)
         {
             _socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             _socket.Bind(endPoint);
-            _socket.Listen(10);
+            _socket.Listen(backlog);
             _sessionFactory += sessionFactory;
             SocketAsyncEventArgs args = new SocketAsyncEventArgs();
             args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);

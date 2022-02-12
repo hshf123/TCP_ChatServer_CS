@@ -11,7 +11,8 @@ namespace Client
         {
             S_Chat pkt = packet as S_Chat;
 
-            Console.WriteLine($"{pkt.userId} : {pkt.chat}");
+            if(pkt.userId==1)
+                Console.WriteLine($"{pkt.userId} : {pkt.chat}");
         }
     }
 }

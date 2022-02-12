@@ -181,16 +181,23 @@ namespace ServerCore
             {
                 if (args.SocketError == SocketError.Success && args.BytesTransferred > 0)
                 {
-                    OnSend(args.BytesTransferred);
-                    _sendArgs.BufferList = null;
-                    _pendingList.Clear();
+                    try
+                    {
+                        OnSend(args.BytesTransferred);
+                        _sendArgs.BufferList = null;
+                        _pendingList.Clear();
 
-                    if (_sendQueue.Count > 0)
-                        RegisterSend();
+                        if (_sendQueue.Count > 0)
+                            RegisterSend();
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine($"OnSendCompleted Failed : {e}");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine($"OnSendCompleted Fail {args.SocketError}");
+                    Disconnect();
                 }
             }
         }

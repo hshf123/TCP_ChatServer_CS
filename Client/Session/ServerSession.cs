@@ -13,7 +13,7 @@ class ServerSession : PacketSession
 
     public override void OnDisConnected(EndPoint endPoint)
     {
-        Console.WriteLine($"OnDisConnected : {endPoint.ToString()}");
+        
     }
 
     public override void OnRecvPacket(ArraySegment<byte> buffer)
