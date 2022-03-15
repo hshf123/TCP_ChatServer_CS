@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server.csproj", "{87674545-96E0-4AC4-BDD7-2C15E67851F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "..\Client\Client.csproj", "{44A7BB42-557A-4EF4-A096-615F98ED17F6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore", "..\ServerCore\ServerCore.csproj", "{4402D407-6D38-4E8A-838B-DBD2242FC881}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketGenerator", "..\PacketGenerator\PacketGenerator.csproj", "{2F03C037-6F76-4C5D-B576-D19F302327AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PacketGenerator", "..\PacketGenerator\PacketGenerator.csproj", "{2F03C037-6F76-4C5D-B576-D19F302327AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{1BD052D7-95C9-46AA-A6EF-66B23F43019C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatClient", "..\ChatClient\ChatClient.csproj", "{8DA459FA-FB82-472A-9B1E-9748337BA57B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,6 @@ Global
 		{87674545-96E0-4AC4-BDD7-2C15E67851F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87674545-96E0-4AC4-BDD7-2C15E67851F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87674545-96E0-4AC4-BDD7-2C15E67851F2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{44A7BB42-557A-4EF4-A096-615F98ED17F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44A7BB42-557A-4EF4-A096-615F98ED17F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44A7BB42-557A-4EF4-A096-615F98ED17F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44A7BB42-557A-4EF4-A096-615F98ED17F6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4402D407-6D38-4E8A-838B-DBD2242FC881}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4402D407-6D38-4E8A-838B-DBD2242FC881}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4402D407-6D38-4E8A-838B-DBD2242FC881}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -35,6 +31,10 @@ Global
 		{2F03C037-6F76-4C5D-B576-D19F302327AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F03C037-6F76-4C5D-B576-D19F302327AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F03C037-6F76-4C5D-B576-D19F302327AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DA459FA-FB82-472A-9B1E-9748337BA57B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DA459FA-FB82-472A-9B1E-9748337BA57B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DA459FA-FB82-472A-9B1E-9748337BA57B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DA459FA-FB82-472A-9B1E-9748337BA57B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

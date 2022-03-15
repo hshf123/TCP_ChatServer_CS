@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client
+namespace ChatClient
 {
     class SessionManager
     {
