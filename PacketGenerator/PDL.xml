@@ -10,4 +10,8 @@
 	<string name="userName"/>
     <string name="chat"/>
   </packet>
+
+  <packet name="S_EnterUser">
+	<int name="userCount"/>
+  </packet>
 </PDL>

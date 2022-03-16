@@ -105,5 +105,21 @@ namespace ChatClient
                 return;
             }
         }
+
+        // 유저 카운팅 하기
+        public void UserCount(int count)
+        {
+            if (tb_userNames.InvokeRequired)
+            {
+                tb_userNames.Invoke(new MethodInvoker(delegate ()
+                {
+                    tb_userNames.Text = $"{count} 명 입장...";
+                }));
+            }
+            else
+            {
+                tb_userNames.Text = $"{count} 명 입장...";
+            }
+        }
     }
 }

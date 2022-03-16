@@ -9,6 +9,7 @@ public enum PacketID
 {
     C_Chat = 1,
 	S_Chat = 2,
+	S_EnterUser = 3,
 	
 }
 
@@ -125,6 +126,46 @@ class S_Chat : IPacket
 		count += sizeof(ushort);
 		Array.Copy(Encoding.Unicode.GetBytes(this.chat), 0, segment.Array, count, chatLen);
 		count += chatLen;
+
+        success &= BitConverter.TryWriteBytes(span, count);
+
+        if (success == false)
+            return null;
+
+        return SendBufferHelper.Close(count);
+    }
+}
+
+class S_EnterUser : IPacket
+{
+    public int userCount;
+
+    public ushort Protocol { get { return (ushort)PacketID.S_EnterUser; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        ReadOnlySpan<byte> read = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+        ushort count = 0;
+
+        count += sizeof(ushort);
+        count += sizeof(ushort);
+        this.userCount = BitConverter.ToInt32(read.Slice(count, read.Length - count));
+		count += sizeof(int);
+    }
+
+    public ArraySegment<byte> Write()
+    {
+        ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+        Span<byte> span = new Span<byte>(segment.Array, segment.Offset, segment.Count);
+
+        ushort count = 0;
+        bool success = true;
+
+        count += sizeof(ushort);
+        success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), (ushort)PacketID.S_EnterUser);
+        count += sizeof(ushort);
+        success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), userCount);
+		count += sizeof(int);
 
         success &= BitConverter.TryWriteBytes(span, count);
 

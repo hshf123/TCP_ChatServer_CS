@@ -15,6 +15,11 @@ namespace Server
         {
             _sessions.Add(session);
             session.Room = this;
+
+            int userCount = _sessions.Count;
+            S_EnterUser packet = new S_EnterUser();
+            packet.userCount = userCount;
+            _pendingList.Add(packet.Write());
         }
 
         public void Leave(ClientSession session)
