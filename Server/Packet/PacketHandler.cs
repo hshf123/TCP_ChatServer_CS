@@ -16,7 +16,7 @@ namespace Server
                 return;
 
             ChatRoom room = cs.Room;
-            room.Push(() => { room.BroadCast(cs, pkt.chat); });
+            room.Push(() => { room.BroadCast(cs, pkt); });
         }
     }
 }

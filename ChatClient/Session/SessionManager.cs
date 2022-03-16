@@ -12,14 +12,12 @@ namespace ChatClient
         List<ServerSession> _sessions = new List<ServerSession>();
         object _lock = new object();
 
-        public void SendForEach()
+        public void SendForEach(C_Chat packet)
         {
             lock(_lock)
             {
                 foreach(ServerSession session in _sessions)
                 {
-                    C_Chat packet = new C_Chat();
-                    packet.chat = "채팅 서버 구현!";
                     ArraySegment<byte> segment = packet.Write();
 
                     session.Send(segment);

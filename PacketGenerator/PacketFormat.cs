@@ -161,7 +161,7 @@ count += sizeof({1});";
 
         // {0} Register
         public static string clientPacketManagerFormat =
-@"using Client;
+@"using ChatClient;
 using ServerCore;
 using System;
 using System.Collections.Generic;

@@ -22,11 +22,12 @@ namespace Server
             _sessions.Remove(session);
         }
 
-        public void BroadCast(ClientSession session, string chat)
+        public void BroadCast(ClientSession session, C_Chat packet)
         {
             S_Chat pkt = new S_Chat();
             pkt.userId = session.SessionId;
-            pkt.chat = chat;
+            pkt.userName = packet.userName;
+            pkt.chat = packet.chat;
             ArraySegment<byte> segment = pkt.Write();
 
             _pendingList.Add(segment);

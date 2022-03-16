@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client
+namespace ChatClient
 {
     class PacketHandler
     {
@@ -11,8 +11,7 @@ namespace Client
         {
             S_Chat pkt = packet as S_Chat;
 
-            if(pkt.userId==1)
-                Console.WriteLine($"{pkt.userId} : {pkt.chat}");
+            Form1.Form.WriteMessage(pkt.userName, pkt.chat);
         }
     }
 }

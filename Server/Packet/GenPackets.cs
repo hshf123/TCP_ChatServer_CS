@@ -22,7 +22,8 @@ interface IPacket
 
 class C_Chat : IPacket
 {
-    public string chat;
+    public string userName;
+	public string chat;
 
     public ushort Protocol { get { return (ushort)PacketID.C_Chat; } }
 
@@ -33,7 +34,11 @@ class C_Chat : IPacket
 
         count += sizeof(ushort);
         count += sizeof(ushort);
-        ushort chatLen = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
+        ushort userNameLen = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
+		count += sizeof(ushort);
+		this.userName = Encoding.Unicode.GetString(read.Slice(count, userNameLen));
+		count += userNameLen;
+		ushort chatLen = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
 		count += sizeof(ushort);
 		this.chat = Encoding.Unicode.GetString(read.Slice(count, chatLen));
 		count += chatLen;
@@ -50,7 +55,12 @@ class C_Chat : IPacket
         count += sizeof(ushort);
         success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), (ushort)PacketID.C_Chat);
         count += sizeof(ushort);
-        ushort chatLen = (ushort)Encoding.Unicode.GetByteCount(this.chat);
+        ushort userNameLen = (ushort)Encoding.Unicode.GetByteCount(this.userName);
+		success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), userNameLen);
+		count += sizeof(ushort);
+		Array.Copy(Encoding.Unicode.GetBytes(this.userName), 0, segment.Array, count, userNameLen);
+		count += userNameLen;
+		ushort chatLen = (ushort)Encoding.Unicode.GetByteCount(this.chat);
 		success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), chatLen);
 		count += sizeof(ushort);
 		Array.Copy(Encoding.Unicode.GetBytes(this.chat), 0, segment.Array, count, chatLen);
@@ -68,6 +78,7 @@ class C_Chat : IPacket
 class S_Chat : IPacket
 {
     public int userId;
+	public string userName;
 	public string chat;
 
     public ushort Protocol { get { return (ushort)PacketID.S_Chat; } }
@@ -81,6 +92,10 @@ class S_Chat : IPacket
         count += sizeof(ushort);
         this.userId = BitConverter.ToInt32(read.Slice(count, read.Length - count));
 		count += sizeof(int);
+		ushort userNameLen = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
+		count += sizeof(ushort);
+		this.userName = Encoding.Unicode.GetString(read.Slice(count, userNameLen));
+		count += userNameLen;
 		ushort chatLen = BitConverter.ToUInt16(read.Slice(count, read.Length - count));
 		count += sizeof(ushort);
 		this.chat = Encoding.Unicode.GetString(read.Slice(count, chatLen));
@@ -100,6 +115,11 @@ class S_Chat : IPacket
         count += sizeof(ushort);
         success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), userId);
 		count += sizeof(int);
+		ushort userNameLen = (ushort)Encoding.Unicode.GetByteCount(this.userName);
+		success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), userNameLen);
+		count += sizeof(ushort);
+		Array.Copy(Encoding.Unicode.GetBytes(this.userName), 0, segment.Array, count, userNameLen);
+		count += userNameLen;
 		ushort chatLen = (ushort)Encoding.Unicode.GetByteCount(this.chat);
 		success &= BitConverter.TryWriteBytes(span.Slice(count, span.Length - count), chatLen);
 		count += sizeof(ushort);

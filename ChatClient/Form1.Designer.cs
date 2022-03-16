@@ -61,6 +61,7 @@ namespace ChatClient
             this.btn_Send.TabIndex = 2;
             this.btn_Send.Text = "전송";
             this.btn_Send.UseVisualStyleBackColor = true;
+            this.btn_Send.Click += new System.EventHandler(this.btn_Send_Click);
             // 
             // tb_myName
             // 
@@ -98,7 +99,8 @@ namespace ChatClient
             this.Controls.Add(this.rtb_chatBox);
             this.Controls.Add(this.rtb_Message);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "채팅 프로그램";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

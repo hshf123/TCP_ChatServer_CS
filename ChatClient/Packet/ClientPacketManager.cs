@@ -1,4 +1,4 @@
-using Client;
+using ChatClient;
 using ServerCore;
 using System;
 using System.Collections.Generic;
