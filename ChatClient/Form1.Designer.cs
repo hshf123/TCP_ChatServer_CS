@@ -41,6 +41,7 @@ namespace ChatClient
             // 
             this.rtb_Message.Location = new System.Drawing.Point(12, 42);
             this.rtb_Message.Name = "rtb_Message";
+            this.rtb_Message.ReadOnly = true;
             this.rtb_Message.Size = new System.Drawing.Size(472, 400);
             this.rtb_Message.TabIndex = 0;
             this.rtb_Message.Text = "";
@@ -84,6 +85,7 @@ namespace ChatClient
             // 
             this.tb_userNames.Location = new System.Drawing.Point(13, 13);
             this.tb_userNames.Name = "tb_userNames";
+            this.tb_userNames.ReadOnly = true;
             this.tb_userNames.Size = new System.Drawing.Size(307, 23);
             this.tb_userNames.TabIndex = 5;
             // 

@@ -23,28 +23,59 @@ namespace ChatClient
             Form = this;
         }
 
+        // 채팅창
         public void WriteMessage(string userName, string chat)
         {
             if(rtb_Message.InvokeRequired)
             {
                 rtb_Message.Invoke(new MethodInvoker(delegate ()
                 {
+                    if (tb_myName.Text == userName)
+                    {
+                        rtb_Message.SelectionAlignment = HorizontalAlignment.Right;
+                        string c = $"{chat}";
+
+                        rtb_Message.AppendText(c + "\n");
+                        rtb_Message.Focus();
+                        rtb_Message.ScrollToCaret();
+
+                        rtb_chatBox.Focus();
+                    }
+                    else
+                    {
+                        rtb_Message.SelectionAlignment = HorizontalAlignment.Left;
+                        string c = $"{userName} > {chat}";
+                        rtb_Message.AppendText(c + "\n");
+                        rtb_Message.Focus();
+                        rtb_Message.ScrollToCaret();
+
+                        rtb_chatBox.Focus();
+                    }
+                }));
+            }
+            else
+            {
+                if (tb_myName.Text == userName)
+                {
+                    rtb_Message.SelectionAlignment = HorizontalAlignment.Right;
+                    string c = $"{chat}";
+
+                    rtb_Message.AppendText(c + "\n");
+                    rtb_Message.Focus();
+                    rtb_Message.ScrollToCaret();
+
+                    rtb_chatBox.Focus();
+                }
+                else
+                {
+                    rtb_Message.SelectionAlignment = HorizontalAlignment.Left;
                     string c = $"{userName} > {chat}";
                     rtb_Message.AppendText(c + "\n");
                     rtb_Message.Focus();
                     rtb_Message.ScrollToCaret();
 
                     rtb_chatBox.Focus();
-                }));
-            }
-            else
-            {
-                string c = $"{userName} > {chat}";
-                rtb_Message.AppendText(c + "\n");
-                rtb_Message.Focus();
-                rtb_Message.ScrollToCaret();
-
-                rtb_chatBox.Focus();
+                }
             }
         }
 
