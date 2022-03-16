@@ -53,6 +53,7 @@ namespace ChatClient
             this.rtb_chatBox.Size = new System.Drawing.Size(402, 74);
             this.rtb_chatBox.TabIndex = 1;
             this.rtb_chatBox.Text = "";
+            this.rtb_chatBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtb_chatBox_KeyDown);
             // 
             // btn_Send
             // 
