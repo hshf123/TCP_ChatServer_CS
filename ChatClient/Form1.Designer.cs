@@ -39,6 +39,7 @@ namespace ChatClient
             // 
             // rtb_Message
             // 
+            this.rtb_Message.Font = new System.Drawing.Font("AppleSDGothicNeoB00", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rtb_Message.Location = new System.Drawing.Point(12, 42);
             this.rtb_Message.Name = "rtb_Message";
             this.rtb_Message.ReadOnly = true;
@@ -69,6 +70,7 @@ namespace ChatClient
             // 
             this.tb_myName.Location = new System.Drawing.Point(383, 13);
             this.tb_myName.Name = "tb_myName";
+            this.tb_myName.ReadOnly = true;
             this.tb_myName.Size = new System.Drawing.Size(100, 23);
             this.tb_myName.TabIndex = 3;
             // 

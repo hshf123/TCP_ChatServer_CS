@@ -10,6 +10,8 @@ namespace Server
         List<ClientSession> _sessions = new List<ClientSession>();
         JobQueue _jobQueue = new JobQueue();
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
+        List<string> _userNames = new List<string>();
+        object _lock = new object();
 
         public void Enter(ClientSession session)
         {

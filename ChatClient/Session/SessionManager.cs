@@ -12,7 +12,7 @@ namespace ChatClient
         List<ServerSession> _sessions = new List<ServerSession>();
         object _lock = new object();
 
-        public void SendForEach(C_Chat packet)
+        public void SendForEach(IPacket packet)
         {
             lock(_lock)
             {
