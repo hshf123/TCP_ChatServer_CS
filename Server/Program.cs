@@ -11,7 +11,6 @@ namespace Server
     class Program
     {
         static Listener _listener = new Listener();
-        public static ChatRoom Room { get; set; } = new ChatRoom();
 
         static void Main(string[] args)
         {
@@ -31,7 +30,6 @@ namespace Server
 
             while (true)
             {
-                Room.Push(() => { Room.Flush(); });
                 Thread.Sleep(250);
             }
         }

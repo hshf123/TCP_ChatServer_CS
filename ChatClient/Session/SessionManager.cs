@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Google.Protobuf;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,15 +13,13 @@ namespace ChatClient
         List<ServerSession> _sessions = new List<ServerSession>();
         object _lock = new object();
 
-        public void SendForEach(IPacket packet)
+        public void SendForEach(IMessage packet)
         {
             lock(_lock)
             {
                 foreach(ServerSession session in _sessions)
                 {
-                    ArraySegment<byte> segment = packet.Write();
-
-                    session.Send(segment);
+                    session.Send(packet);
                 }
             }
         }

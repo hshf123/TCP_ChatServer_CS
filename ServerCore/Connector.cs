@@ -8,6 +8,7 @@ namespace ServerCore
 {
     public class Connector
     {
+        Session _session;
         Func<Session> _sessionFactory;
 
         public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory, int backlog)
@@ -23,6 +24,14 @@ namespace ServerCore
 
                 RegisterConnect(args);
             }
+        }
+
+        public void Disconnect()
+        {
+            if (_session == null)
+                return;
+
+            _session.Disconnect();
         }
 
         void RegisterConnect(SocketAsyncEventArgs args)
@@ -43,6 +52,7 @@ namespace ServerCore
                 Session session = _sessionFactory.Invoke();
                 session.Start(args.ConnectSocket);
                 session.OnConnected(args.RemoteEndPoint);
+                _session = session;
             }
             else
             {

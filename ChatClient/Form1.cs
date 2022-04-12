@@ -1,4 +1,5 @@
-﻿using ServerCore;
+﻿using Google.Protobuf.Protocol;
+using ServerCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +17,8 @@ namespace ChatClient
 {
     public partial class Form1 : Form
     {
+        Connector _connector;
+
         public static Form1 Form;
         public Form1(string userName)
         {
@@ -35,8 +38,8 @@ namespace ChatClient
             IPAddress ipAddr = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 194);
 
-            Connector connector = new Connector();
-            connector.Connect(endPoint, SessionManager.Instance.Generate, 1);
+            _connector = new Connector();
+            _connector.Connect(endPoint, SessionManager.Instance.Generate, 1);
         }
         
         // 채팅창
@@ -93,8 +96,8 @@ namespace ChatClient
             string userName = $"{tb_myName.Text}";
             string chat = $"{rtb_chatBox.Text}";
             C_Chat packet = new C_Chat();
-            packet.userName = userName;
-            packet.chat = chat;
+            packet.UserName = userName;
+            packet.Chat = chat;
             SessionManager.Instance.SendForEach(packet);
             rtb_chatBox.Clear();
         }
@@ -121,6 +124,11 @@ namespace ChatClient
             {
                 tb_userNames.Text = $"{count} 명 입장...";
             }
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _connector.Disconnect();
         }
     }
 }

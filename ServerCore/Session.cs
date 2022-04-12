@@ -65,7 +65,7 @@ namespace ServerCore
             RegisterRecv();
         }
 
-        void Disconnect()
+        public void Disconnect()
         {
             if (Interlocked.CompareExchange(ref _disconnected, 1, 0) == 1)
                 return;
