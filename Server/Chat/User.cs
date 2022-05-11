@@ -4,7 +4,10 @@ using System.Text;
 
 namespace Server.Chat
 {
-    class User
+    public class User
     {
+        public ChatRoom Room { get; set; }
+        public ClientSession Session { get; set; }
+        public int Id { get; set; }
     }
 }

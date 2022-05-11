@@ -1,13 +1,15 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using Server;
+using Server.Chat;
 using ServerCore;
 using System;
 using System.Net;
 
-class ClientSession : PacketSession
+public class ClientSession : PacketSession
 {
     public int SessionId { get; set; }
+    public User User { get; set; }
 
     public void Send(IMessage packet)
     {
@@ -25,14 +27,15 @@ class ClientSession : PacketSession
 
     public override void OnConnected(EndPoint endPoint)
     {
-        S_EnterUser enterPacket = new S_EnterUser();
-        enterPacket.UserCount = 1;
-        Send(enterPacket);
+        User = UserManager.Instance.Add();
+        User.Session = this;
+        RoomManager.Instance.Find(1).EnterRoom(User);
     }
 
     public override void OnDisConnected(EndPoint endPoint)
     {
         SessionManager.Instance.Remove(this);
+        RoomManager.Instance.Find(1).LeaveRoom(User);
     }
 
     public override void OnRecvPacket(ArraySegment<byte> buffer)

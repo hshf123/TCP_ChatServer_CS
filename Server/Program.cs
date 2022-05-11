@@ -1,4 +1,5 @@
 ﻿using Server;
+using Server.Chat;
 using ServerCore;
 using System;
 using System.Net;
@@ -14,6 +15,8 @@ namespace Server
 
         static void Main(string[] args)
         {
+            RoomManager.Instance.Add();
+
             // 1) Listener 소켓 준비
             // 2) Bind(서버주소/Port를 소켓에 연동)
             // 3) Listen

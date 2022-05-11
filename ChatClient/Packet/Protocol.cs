@@ -26,16 +26,15 @@ namespace Google.Protobuf.Protocol {
           string.Concat(
             "Cg5Qcm90b2NvbC5wcm90bxIIdHV0b3JpYWwaH2dvb2dsZS9wcm90b2J1Zi90",
             "aW1lc3RhbXAucHJvdG8iKAoGQ19DaGF0EhAKCHVzZXJOYW1lGAEgASgJEgwK",
-            "BGNoYXQYAiABKAkiOAoGU19DaGF0Eg4KBnVzZXJJZBgBIAEoBRIQCgh1c2Vy",
-            "TmFtZRgCIAEoCRIMCgRjaGF0GAMgASgJIiAKC1NfRW50ZXJVc2VyEhEKCXVz",
-            "ZXJDb3VudBgBIAEoBSoxCgVNc2dJZBIKCgZDX0NIQVQQABIKCgZTX0NIQVQQ",
-            "ARIQCgxTX0VOVEVSX1VTRVIQAkIbqgIYR29vZ2xlLlByb3RvYnVmLlByb3Rv",
-            "Y29sYgZwcm90bzM="));
+            "BGNoYXQYAiABKAkiKAoGU19DaGF0EhAKCHVzZXJOYW1lGAEgASgJEgwKBGNo",
+            "YXQYAiABKAkiIAoLU19FbnRlclVzZXISEQoJdXNlckNvdW50GAEgASgFKjEK",
+            "BU1zZ0lkEhAKDFNfRU5URVJfVVNFUhAAEgoKBkNfQ0hBVBABEgoKBlNfQ0hB",
+            "VBACQhuqAhhHb29nbGUuUHJvdG9idWYuUHJvdG9jb2xiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Google.Protobuf.Protocol.MsgId), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.C_Chat), global::Google.Protobuf.Protocol.C_Chat.Parser, new[]{ "UserName", "Chat" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.S_Chat), global::Google.Protobuf.Protocol.S_Chat.Parser, new[]{ "UserId", "UserName", "Chat" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.S_Chat), global::Google.Protobuf.Protocol.S_Chat.Parser, new[]{ "UserName", "Chat" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.S_EnterUser), global::Google.Protobuf.Protocol.S_EnterUser.Parser, new[]{ "UserCount" }, null, null, null, null)
           }));
     }
@@ -44,9 +43,9 @@ namespace Google.Protobuf.Protocol {
   }
   #region Enums
   public enum MsgId {
-    [pbr::OriginalName("C_CHAT")] CChat = 0,
-    [pbr::OriginalName("S_CHAT")] SChat = 1,
-    [pbr::OriginalName("S_ENTER_USER")] SEnterUser = 2,
+    [pbr::OriginalName("S_ENTER_USER")] SEnterUser = 0,
+    [pbr::OriginalName("C_CHAT")] CChat = 1,
+    [pbr::OriginalName("S_CHAT")] SChat = 2,
   }
 
   #endregion
@@ -312,7 +311,6 @@ namespace Google.Protobuf.Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public S_Chat(S_Chat other) : this() {
-      userId_ = other.userId_;
       userName_ = other.userName_;
       chat_ = other.chat_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -324,20 +322,8 @@ namespace Google.Protobuf.Protocol {
       return new S_Chat(this);
     }
 
-    /// <summary>Field number for the "userId" field.</summary>
-    public const int UserIdFieldNumber = 1;
-    private int userId_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int UserId {
-      get { return userId_; }
-      set {
-        userId_ = value;
-      }
-    }
-
     /// <summary>Field number for the "userName" field.</summary>
-    public const int UserNameFieldNumber = 2;
+    public const int UserNameFieldNumber = 1;
     private string userName_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -349,7 +335,7 @@ namespace Google.Protobuf.Protocol {
     }
 
     /// <summary>Field number for the "chat" field.</summary>
-    public const int ChatFieldNumber = 3;
+    public const int ChatFieldNumber = 2;
     private string chat_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -375,7 +361,6 @@ namespace Google.Protobuf.Protocol {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (UserId != other.UserId) return false;
       if (UserName != other.UserName) return false;
       if (Chat != other.Chat) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -385,7 +370,6 @@ namespace Google.Protobuf.Protocol {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (UserId != 0) hash ^= UserId.GetHashCode();
       if (UserName.Length != 0) hash ^= UserName.GetHashCode();
       if (Chat.Length != 0) hash ^= Chat.GetHashCode();
       if (_unknownFields != null) {
@@ -406,16 +390,12 @@ namespace Google.Protobuf.Protocol {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (UserId != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(UserId);
-      }
       if (UserName.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteString(UserName);
       }
       if (Chat.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(18);
         output.WriteString(Chat);
       }
       if (_unknownFields != null) {
@@ -428,16 +408,12 @@ namespace Google.Protobuf.Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (UserId != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(UserId);
-      }
       if (UserName.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteString(UserName);
       }
       if (Chat.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(18);
         output.WriteString(Chat);
       }
       if (_unknownFields != null) {
@@ -450,9 +426,6 @@ namespace Google.Protobuf.Protocol {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (UserId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(UserId);
-      }
       if (UserName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(UserName);
       }
@@ -470,9 +443,6 @@ namespace Google.Protobuf.Protocol {
     public void MergeFrom(S_Chat other) {
       if (other == null) {
         return;
-      }
-      if (other.UserId != 0) {
-        UserId = other.UserId;
       }
       if (other.UserName.Length != 0) {
         UserName = other.UserName;
@@ -495,15 +465,11 @@ namespace Google.Protobuf.Protocol {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            UserId = input.ReadInt32();
-            break;
-          }
-          case 18: {
+          case 10: {
             UserName = input.ReadString();
             break;
           }
-          case 26: {
+          case 18: {
             Chat = input.ReadString();
             break;
           }
@@ -522,15 +488,11 @@ namespace Google.Protobuf.Protocol {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 8: {
-            UserId = input.ReadInt32();
-            break;
-          }
-          case 18: {
+          case 10: {
             UserName = input.ReadString();
             break;
           }
-          case 26: {
+          case 18: {
             Chat = input.ReadString();
             break;
           }

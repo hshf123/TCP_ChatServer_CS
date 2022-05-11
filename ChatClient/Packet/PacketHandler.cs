@@ -1,26 +1,24 @@
-﻿using Google.Protobuf;
+﻿using ChatClient;
+using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using ServerCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChatClient
+class PacketHandler
 {
-    class PacketHandler
+    public static void S_ChatHandler(PacketSession session, IMessage packet)
     {
-        public static void S_ChatHandler(PacketSession session, IMessage packet)
-        {
-            S_Chat pkt = packet as S_Chat;
+        S_Chat pkt = packet as S_Chat;
 
-            Form1.Form.WriteMessage(pkt.UserName, pkt.Chat);
-        }
+        Form1.Form.WriteMessage(pkt.UserName, pkt.Chat);
+    }
 
-        public static void S_EnterUserHandler(PacketSession session, IMessage packet)
-        {
-            S_EnterUser pkt = packet as S_EnterUser;
+    public static void S_EnterUserHandler(PacketSession session, IMessage packet)
+    {
+        S_EnterUser pkt = packet as S_EnterUser;
 
-            Form1.Form.UserCount(pkt.UserCount);
-        }
+        Form1.Form.UserCount(pkt.UserCount);
     }
 }

@@ -1,4 +1,3 @@
-using ChatClient;
 using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using ServerCore;
@@ -24,10 +23,10 @@ class PacketManager
 
 	public void Register()
 	{
-		_onRecv.Add((ushort)MsgId.SChat, MakePacket<S_Chat>);
-		_handler.Add((ushort)MsgId.SChat, PacketHandler.S_ChatHandler);
 		_onRecv.Add((ushort)MsgId.SEnterUser, MakePacket<S_EnterUser>);
 		_handler.Add((ushort)MsgId.SEnterUser, PacketHandler.S_EnterUserHandler);
+		_onRecv.Add((ushort)MsgId.SChat, MakePacket<S_Chat>);
+		_handler.Add((ushort)MsgId.SChat, PacketHandler.S_ChatHandler);
 
 	}
 
